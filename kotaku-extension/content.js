@@ -10,40 +10,56 @@ for (var i = 0; i < ptags.length; i++) {
 }
 //https://stackoverflow.com/questions/29089467/queryselectorall-print-textcontent-of-all-nodes
 
-
-
-// https://runjs.app/blog/chatgpt-javascript-api
-const { Configuration, OpenAIApi } = require("openai")
-
-const configuration = new Configuration({
-    apiKey: "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",
-})
-
-const openai = new OpenAIApi(configuration)
+const apiKey = "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";
 
 const getResponse = async () => {
-    const response = await openai.createChatCompletion({
-        model: 'gpt-3.5-turbo',
-        messages: [
-            {
-                role: 'user',
-                content: `Summarize this kotaku article as much as possible: ${text}`,
-            },
-        ],
-        // GPT models consume unstructured text, which is represented to 
-        // the model as a sequence of “tokens.”
-        max_tokens: 1000, 
-        // scale from 0-2 on how 'creative' the AI can be
-        temperature: 0, 
-        // https://platform.openai.com/docs/api-reference/chat/create
-        frequency_penalty: 0.0,
-        presence_penalty: 0.0,
-    })
+    try {
+        console.log('Request payload:', JSON.stringify({
+            model: 'gpt-3.5-turbo',
+            messages: [
+                {
+                    role: 'user',
+                    content: `Summarize this kotaku article as much as possible: ${text}`,
+                },
+            ],
+            max_tokens: 1000,
+            temperature: 0,
+            frequency_penalty: 0.0,
+            presence_penalty: 0.0,
+        }));
 
-    console.log(response.data.choices[0].message)
+        console.log('Text content:', text);
+
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`,
+            },
+        });
+
+        if (!response.ok) {
+            console.error('Error in OpenAI API response:', response.status, response.statusText);
+            const responseText = await response.text();
+            console.error('Response text:', responseText);
+            return;
+        }
+
+        const responseData = await response.json();
+
+        console.log(responseData);
+
+        if (responseData.choices && responseData.choices.length > 0) {
+            console.log(responseData.choices[0].message);
+        } else {
+            console.error('Invalid or empty response from OpenAI API');
+        }
+    } catch (error) {
+        console.error('Error fetching or processing data:', error);
+    }
 }
 
-console.log(text)
-console.log('This should show up in the console for kotaku.com')
-getResponse();
 
+console.log(text);
+console.log('This should show up in the console for kotaku.com');
+getResponse();
