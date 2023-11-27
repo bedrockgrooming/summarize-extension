@@ -1,11 +1,3 @@
-/*
-chrome.runtime.onMessage.addListener((message) => {
-    const { checkbox } = message;
-    if (checkbox) {
-    document.getElementById('body').style.display = checkbox ? 'none': 'block';
-    }
-});
-*/
 
 // Select all <p> tags and put them into a nodelist of 
 // <p> tags
@@ -22,7 +14,7 @@ for (let i = 0; i < ptags.length; i++) {
 // https://stackoverflow.com/questions/29089467/queryselectorall-print-textcontent-of-all-nodes
 
 // Variables for the JSON payload that will be sent to API
-const apiKey = "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";
+const apiKey = "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";
 const authStr = 'Bearer ' + apiKey;
 const aiPrompt = `Summarize this kotaku article as much as possible: ${text}`;
 
@@ -36,7 +28,7 @@ function FetchAPI() {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${apiKey}`,
+            Authorization: authStr,
         },
         body: JSON.stringify({
             model: 'gpt-3.5-turbo',
@@ -46,7 +38,7 @@ function FetchAPI() {
                     content: aiPrompt,
                 },
             ],
-            max_tokens: 1000,
+            max_tokens: 3000,
             temperature: 0,
             frequency_penalty: 0.0,
             presence_penalty: 0.0,
@@ -68,22 +60,17 @@ function FetchAPI() {
         }
         ptags[0].innerText = newText + 
             '\n\nOriginal article text character count: ' + text.length +
-            '\nSummarized article text character count: ' + newText.length
+            '\nSummarized article text character count: ' + newText.length +
+            '\nDifference: ' + (text.length - newText.length)
     })
     .catch(error => {
         console.log('Something bad happened ' + error)
     });
     
     console.log(ptags)
-
-    /*
-    for (var i = 1; i < ptags.length; i++) {
-        ptags[i].innerHTML = newText
-    }
-    */
-
-    //ptags[0].innerText = 'test';
 }
 
 console.log('Char count of original text: ' + text.length);
+
 FetchAPI();
+
