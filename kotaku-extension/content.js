@@ -1,3 +1,12 @@
+/*
+chrome.runtime.onMessage.addListener((message) => {
+    const { checkbox } = message;
+    if (checkbox) {
+    document.getElementById('body').style.display = checkbox ? 'none': 'block';
+    }
+});
+*/
+
 // Select all <p> tags and put them into a nodelist of 
 // <p> tags
 let ptags = document.querySelectorAll('p')
@@ -13,7 +22,7 @@ for (let i = 0; i < ptags.length; i++) {
 // https://stackoverflow.com/questions/29089467/queryselectorall-print-textcontent-of-all-nodes
 
 // Variables for the JSON payload that will be sent to API
-const apiKey = "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";
+const apiKey = "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";
 const authStr = 'Bearer ' + apiKey;
 const aiPrompt = `Summarize this kotaku article as much as possible: ${text}`;
 
@@ -54,6 +63,12 @@ function FetchAPI() {
         newText = data['choices'][0].message.content
         console.log('Char count of new text: ' + newText.length)
         console.log(newText)
+        for (var i = 1; i < ptags.length; i++) {
+            ptags[i].innerHTML = ''
+        }
+        ptags[0].innerText = newText + 
+            '\n\nOriginal article text character count: ' + text.length +
+            '\nSummarized article text character count: ' + newText.length
     })
     .catch(error => {
         console.log('Something bad happened ' + error)
@@ -67,7 +82,7 @@ function FetchAPI() {
     }
     */
 
-    ptags[0].innerText = 'test';
+    //ptags[0].innerText = 'test';
 }
 
 console.log('Char count of original text: ' + text.length);
