@@ -1,5 +1,5 @@
 {
-  "name": "Hello Extensions",
+  "name": "Kotaku Summarizer Extension",
   "description": "Base Level Extension",
   "version": "1.0",
   "manifest_version": 3,
@@ -8,18 +8,16 @@
       "matches": [
         "https://kotaku.com/*"
       ],
-
       "js": ["content.js"]
     }
   ],
-  
+  "host_permissions": [
+    "https://www.kotaku.com/"
+  ],
   "permissions": [
     "scripting",
     "activeTab",
     "storage",
-    "webNavigation",
-    "https://www.kotaku.com/*"
+    "webNavigation"
   ]
-  
-  
 }
