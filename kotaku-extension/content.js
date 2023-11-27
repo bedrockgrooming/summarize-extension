@@ -1,3 +1,22 @@
+<<<<<<< Updated upstream
+=======
+/*
+chrome.runtime.onMessage.addListener((message) => {
+    const { checkbox } = message;
+    if (checkbox) {
+    document.getElementById('body').style.display = checkbox ? 'none': 'block';
+    }
+});
+*/
+
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.action === 'getSummary') {
+        // Send a message to the background script to fetch the summary
+        chrome.runtime.sendMessage({ action: 'showSummary', summary: newText });
+    }
+});
+>>>>>>> Stashed changes
 // Select all <p> tags and put them into a nodelist of 
 // <p> tags
 let ptags = document.querySelectorAll('p')
@@ -10,7 +29,14 @@ for (var i = 0; i < ptags.length; i++) {
 }
 //https://stackoverflow.com/questions/29089467/queryselectorall-print-textcontent-of-all-nodes
 
+<<<<<<< Updated upstream
 const apiKey = "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";
+=======
+// Variables for the JSON payload that will be sent to API
+const apiKey = "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";
+const authStr = 'Bearer ' + apiKey;
+const aiPrompt = `Summarize this kotaku article as much as possible: ${text}`;
+>>>>>>> Stashed changes
 
 const getResponse = async () => {
     try {
@@ -26,7 +52,26 @@ const getResponse = async () => {
             temperature: 0,
             frequency_penalty: 0.0,
             presence_penalty: 0.0,
+<<<<<<< Updated upstream
         }));
+=======
+        })
+    }).then(response => {
+        /*
+        if (response.status === 429) {
+            // Implement a delay or retry mechanism
+            console.log('Rate limit exceeded. Waiting and retrying...');
+            setTimeout(() => FetchAPI(), 5000); // Retry after 5 seconds
+        } else {
+            return response.json();
+        }
+        */
+        return response.json();
+    }).then(data=>{
+        console.log(data)
+        console.log(typeof data)
+        console.log(Object.keys(data))
+>>>>>>> Stashed changes
 
         console.log('Text content:', text);
 

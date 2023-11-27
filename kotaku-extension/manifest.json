@@ -11,6 +11,12 @@
       "js": ["content.js"]
     }
   ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html"
+  },
   "host_permissions": [
     "https://www.kotaku.com/"
   ],
@@ -18,6 +24,13 @@
     "scripting",
     "activeTab",
     "storage",
+    "tabs",
     "webNavigation"
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["popup.js"],
+      "matches": ["https://kotaku.com/*"]
+    }
   ]
 }
