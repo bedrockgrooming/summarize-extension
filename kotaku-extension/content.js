@@ -61,5 +61,5 @@ const getResponse = async () => {
 
 
 console.log(text);
-console.log('This should show up in the console for kotaku.com');
+console.log("This should show up in the console for kotaku.com");
 getResponse();
