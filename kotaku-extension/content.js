@@ -2,64 +2,73 @@
 // <p> tags
 let ptags = document.querySelectorAll('p')
 
-let text = ""
+let text = "";
+let newText = "";
+
 // Take all text content from each <p> and concatenate
 // them into one variable named text
-for (var i = 0; i < ptags.length; i++) {
+for (let i = 0; i < ptags.length; i++) {
     text = text.concat(ptags[i].textContent)
 }
-//https://stackoverflow.com/questions/29089467/queryselectorall-print-textcontent-of-all-nodes
+// https://stackoverflow.com/questions/29089467/queryselectorall-print-textcontent-of-all-nodes
 
-const apiKey = "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";
+// Variables for the JSON payload that will be sent to API
+const apiKey = "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";
+const authStr = 'Bearer ' + apiKey;
+const aiPrompt = `Summarize this kotaku article as much as possible: ${text}`;
 
-const getResponse = async () => {
-    try {
-        console.log('Request payload:', JSON.stringify({
+// Send JSON payload with necessary data for the OpenAI API
+// https://community.openai.com/t/communicating-with-the-api-in-vanilla-js-no-server-side-stuff/4984/5
+function FetchAPI() {
+    console.log('Text content:', text);
+
+    // fetch(url, JSON package)
+    fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
             model: 'gpt-3.5-turbo',
             messages: [
                 {
                     role: 'user',
-                    content: `Summarize this kotaku article as much as possible: ${text}`,
+                    content: aiPrompt,
                 },
             ],
             max_tokens: 1000,
             temperature: 0,
             frequency_penalty: 0.0,
             presence_penalty: 0.0,
-        }));
+        })
+    }).then(response => {
+        return response.json()
+    }).then(data=>{
+        console.log(data)
+        console.log(typeof data)
+        console.log(Object.keys(data))
 
-        console.log('Text content:', text);
+        // Assign API output to newText, then output it and its length 
+        // in console
+        newText = data['choices'][0].message.content
+        console.log('Char count of new text: ' + newText.length)
+        console.log(newText)
+    })
+    .catch(error => {
+        console.log('Something bad happened ' + error)
+    });
+    
+    console.log(ptags)
 
-        const response = await fetch('https://api.openai.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${apiKey}`,
-            },
-        });
-
-        if (!response.ok) {
-            console.error('Error in OpenAI API response:', response.status, response.statusText);
-            const responseText = await response.text();
-            console.error('Response text:', responseText);
-            return;
-        }
-
-        const responseData = await response.json();
-
-        console.log(responseData);
-
-        if (responseData.choices && responseData.choices.length > 0) {
-            console.log(responseData.choices[0].message);
-        } else {
-            console.error('Invalid or empty response from OpenAI API');
-        }
-    } catch (error) {
-        console.error('Error fetching or processing data:', error);
+    /*
+    for (var i = 1; i < ptags.length; i++) {
+        ptags[i].innerHTML = newText
     }
+    */
+
+    ptags[0].innerText = 'test';
 }
 
-
-console.log(text);
-console.log('This should show up in the console for kotaku.com');
-getResponse();
+console.log('Char count of original text: ' + text.length);
+FetchAPI();
