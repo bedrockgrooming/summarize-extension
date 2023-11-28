@@ -14,7 +14,7 @@ for (let i = 0; i < ptags.length; i++) {
 // https://stackoverflow.com/questions/29089467/queryselectorall-print-textcontent-of-all-nodes
 
 // Variables for the JSON payload that will be sent to API
-const apiKey = "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";
+const apiKey = "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";
 const authStr = 'Bearer ' + apiKey;
 const aiPrompt = `Summarize this kotaku article as much as possible: ${text}`;
 
