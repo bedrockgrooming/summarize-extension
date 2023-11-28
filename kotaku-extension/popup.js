@@ -1,28 +1,35 @@
-<<<<<<< Updated upstream
-console.log('This is a popup!');
-=======
-/*const checkbox = document.querySelector("input[name=checkbox]");
-
-checkbox.addEventListener('change', (event) => {
-    // you can also use: const { checked } = checkbox;
-    const { checked } = event.target;
-
-    toggleContent(checked);
-});
-
-const toggleContent = (checked) => {
-    chrome.runtime.sendMessage({"checkbox": checked}, (response) => {
-    
-        console.log(`Checkbox is turned ${checked ? 'on' : 'off'}`)
-    });
-}; */
 // popup.js
-chrome.runtime.onMessage.addListener((message) => {
-    if (message.action === 'sendSummary') {
-        // Display the summarized text in the popup
-        document.getElementById('result').innerText = message.summary;
-    }
+
+let enabled;
+
+// Restore previous state on load 
+document.addEventListener("DOMContentLoaded", () => {
+    chrome.storage.sync.get("enabled", result => {
+        enabled = result.enabled ?? true;
+        updateButton();
+    });
 });
 
-console.log("Popup script is running.");
->>>>>>> Stashed changes
+function updateButton() {
+    if (enabled) {
+        document.getElementById("disableButton").innerText = "Enabled";
+    } else {
+        document.getElementById("disableButton").innerText = "Disabled";
+    }
+}
+
+document.getElementById("disableButton").addEventListener("click", () => {
+
+    enabled = !enabled;
+
+    // Save new state
+    chrome.storage.sync.set({ enabled });
+
+    updateButton();
+
+    // Notify content script
+    chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
+        chrome.tabs.sendMessage(tabs[0].id, { enabled });
+    });
+
+});

@@ -1,110 +1,90 @@
-<<<<<<< Updated upstream
-=======
-/*
-chrome.runtime.onMessage.addListener((message) => {
-    const { checkbox } = message;
-    if (checkbox) {
-    document.getElementById('body').style.display = checkbox ? 'none': 'block';
+// content.js
+
+chrome.storage.sync.get("enabled", function (result) {
+
+    let { enabled } = result;
+
+    chrome.runtime.onMessage.addListener(
+        (request, sender, sendResponse) => {
+            if (request.enabled !== undefined) {
+                enabled = request.enabled;
+            }
+        });
+
+    if (enabled) {
+        // Run summarization code
+        FetchAPI();
     }
 });
-*/
 
-
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.action === 'getSummary') {
-        // Send a message to the background script to fetch the summary
-        chrome.runtime.sendMessage({ action: 'showSummary', summary: newText });
-    }
-});
->>>>>>> Stashed changes
 // Select all <p> tags and put them into a nodelist of 
 // <p> tags
-let ptags = document.querySelectorAll('p')
+let ptags = document.querySelectorAll('p');
 
-let text = ""
+// Get text content
+let text = "";
+let newText = "";
+
 // Take all text content from each <p> and concatenate
 // them into one variable named text
-for (var i = 0; i < ptags.length; i++) {
+for (let i = 0; i < ptags.length; i++) {
     text = text.concat(ptags[i].textContent)
 }
-//https://stackoverflow.com/questions/29089467/queryselectorall-print-textcontent-of-all-nodes
+// https://stackoverflow.com/questions/29089467/queryselectorall-print-textcontent-of-all-nodes
 
-<<<<<<< Updated upstream
-const apiKey = "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";
-=======
 // Variables for the JSON payload that will be sent to API
-const apiKey = "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";
+const apiKey = "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";
 const authStr = 'Bearer ' + apiKey;
 const aiPrompt = `Summarize this kotaku article as much as possible: ${text}`;
->>>>>>> Stashed changes
 
-const getResponse = async () => {
-    try {
-        console.log('Request payload:', JSON.stringify({
+// Send JSON payload with necessary data for the OpenAI API
+// https://community.openai.com/t/communicating-with-the-api-in-vanilla-js-no-server-side-stuff/4984/5
+function FetchAPI() {
+    console.log('Text content:', text);
+
+    // fetch(url, JSON package)
+    fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: authStr,
+        },
+        body: JSON.stringify({
             model: 'gpt-3.5-turbo',
             messages: [
                 {
                     role: 'user',
-                    content: `Summarize this kotaku article as much as possible: ${text}`,
+                    content: aiPrompt,
                 },
             ],
             max_tokens: 1000,
             temperature: 0,
             frequency_penalty: 0.0,
             presence_penalty: 0.0,
-<<<<<<< Updated upstream
-        }));
-=======
         })
     }).then(response => {
-        /*
-        if (response.status === 429) {
-            // Implement a delay or retry mechanism
-            console.log('Rate limit exceeded. Waiting and retrying...');
-            setTimeout(() => FetchAPI(), 5000); // Retry after 5 seconds
-        } else {
-            return response.json();
-        }
-        */
-        return response.json();
-    }).then(data=>{
+        return response.json()
+    }).then(data => {
         console.log(data)
         console.log(typeof data)
         console.log(Object.keys(data))
->>>>>>> Stashed changes
 
-        console.log('Text content:', text);
-
-        const response = await fetch('https://api.openai.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${apiKey}`,
-            },
+        // Assign API output to newText, then output it and its length 
+        // in console
+        newText = data['choices'][0].message.content
+        console.log('Char count of new text: ' + newText.length)
+        console.log(newText)
+        for (var i = 1; i < ptags.length; i++) {
+            ptags[i].innerHTML = ''
+        }
+        ptags[0].innerText = newText +
+            '\n\nOriginal article text character count: ' + text.length +
+            '\nSummarized article text character count: ' + newText.length +
+            '\nDifference: ' + (text.length - newText.length)
+    })
+        .catch(error => {
+            console.log('Something bad happened ' + error)
         });
 
-        if (!response.ok) {
-            console.error('Error in OpenAI API response:', response.status, response.statusText);
-            const responseText = await response.text();
-            console.error('Response text:', responseText);
-            return;
-        }
-
-        const responseData = await response.json();
-
-        console.log(responseData);
-
-        if (responseData.choices && responseData.choices.length > 0) {
-            console.log(responseData.choices[0].message);
-        } else {
-            console.error('Invalid or empty response from OpenAI API');
-        }
-    } catch (error) {
-        console.error('Error fetching or processing data:', error);
-    }
+    console.log(ptags)
 }
-
-
-console.log(text);
-console.log("This should show up in the console for kotaku.com");
-getResponse();
